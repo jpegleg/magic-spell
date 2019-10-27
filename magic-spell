@@ -24,7 +24,7 @@ rsync -raz -e "ssh -i $3/.ssh/id_rsa" --stats --progress --bwlimit=44000 --exclu
 tar czvf "$targethost"-snapshot$(date +%Y%m%d).tgz "$targethost"-snapshot$(date +%Y%m%d)
 
 # clean out working directory
-find $(pwd)/"$targethost"-snapshot$(date +%Y%m%d)/ -exec shred {} \;
+find $(pwd)/"$targethost"-snapshot$(date +%Y%m%d)/ -type f -exec shred {} \;
 rm -rf  "$targethost"-snapshot$(date +%Y%m%d)
 
 # encrypt with a public pgp key then clean up if successful
