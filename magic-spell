@@ -18,13 +18,13 @@ cd $3
 # this rsync must run as superuser to perserve permissions and ownership properly!
 
 # sync most of an entire server to backup! be sure you have enough space
-rsync -raz -e "ssh -i /home/unseenwork/.ssh/id_rsa" --stats --progress --bwlimit=44000 --exclude '/sys' --exclude '/var/cache' --exclude '/usr/src' --exclude '/proc' --exclude '/dev' --exclude '/var/log' root@"$targethost":/ "$targethost"-snapshot$(date +%Y%m%d)
+rsync -raz -e "ssh -i $3/.ssh/id_rsa" --stats --progress --bwlimit=44000 --exclude '/sys' --exclude '/var/cache' --exclude '/usr/src' --exclude '/proc' --exclude '/dev' --exclude '/var/log' root@"$targethost":/ "$targethost"-snapshot$(date +%Y%m%d)
 
 # tar up contents to save space and make encryption easier to manage
 tar czvf "$targethost"-snapshot$(date +%Y%m%d).tgz "$targethost"-snapshot$(date +%Y%m%d)
 
 # clean out working directory
-find $pwd/"$targethost"-snapshot$(date +%Y%m%d)/ -exec shred {} \;
+find $(pwd)/"$targethost"-snapshot$(date +%Y%m%d)/ -exec shred {} \;
 rm -rf  "$targethost"-snapshot$(date +%Y%m%d)
 
 # encrypt with a public pgp key then clean up if successful
