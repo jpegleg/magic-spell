@@ -8,18 +8,17 @@ Example usage:
 
 chmod +x magic-spell
 mv magic-spell /usr/local/sbin/
-cp -r ~/.ssh /var/workspace/
+mkdir -p /var/workspace/.ssh
+cp /home/some-admin-ssh-user/.ssh/id_rsa /var/workspace/id_rsa
 magic-spell keeganbowen.com D9348300F93B589BFCB61242870C8F5DFE58219A /var/workspace/
 
 
 
 
-Different style example usage as crontab, and with email public key identifier:
+Different style example usage as crontab, root's home directory as the work dir, and with email public key identifier:
 
 cp magic-spell /root/
 chmod +x /root/magic-spell
-mkdir /mnt/sas/.ssh
-cp /home/adminuser/.ssh/id_rsa /mnt/sas/.ssh/
 crontab -e
 
-5 5 5 * * /root/magic-spell keeganbowen.com mykey@keeganbowen.com /mnt/sas/
+5 5 5 * * /root/magic-spell keeganbowen.com mykey@keeganbowen.com /root/
