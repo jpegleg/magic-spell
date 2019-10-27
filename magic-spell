@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# backup (mostly) entire server, pack into tarball, encrypt, and clean up
+# all done in current directory as work dir
+
+# pass in the website with the https:// as the first option
+# and the key email or fingerprint that is in your keyring to use for encryption as the second option
+targethost=$1
+mykey=$2
+
+# just always try to make the dir
+mkdir "$targethost"-snapshot$(date +%Y%m%d) 2>/dev/null
+
+# sync most of an entire server to backup! be sure you have enough space
+rsync -raz --stats --progress --bwlimit=44000 --exclude '/sys' --exclude '/var/cache' --exclude '/usr/src' --exclude '/proc' --exclude '/dev' --exclude '/var/log' root@"$targethost":/ "$targethost"-snapshot$(date +%Y%m%d)
+
+# tar up contents to save space and make encryption easier to manage
+tar czvf "$targethost"-snapshot$(date +%Y%m%d).tgz "$targethost"-snapshot$(date +%Y%m%d)
+
+# clean out working directory
+find $pwd/"$targethost"-snapshot$(date +%Y%m%d)/ -exec shred {} \;
+rm -rf  "$targethost"-snapshot$(date +%Y%m%d)
+
+# encrypt with a public pgp key then clean up if successful
+gpg -o $targethost-snapshot$(date +%Y%m%d).asc --encrypt -r $mykey --always-trust  "$targethost"-snapshot$(date +%Y%m%d).tgz &&
+shred "$targethost"-snapshot$(date +%Y%m%d).tgz && rm -rf  "$targethost"-snapshot$(date +%Y%m%d).tgz
