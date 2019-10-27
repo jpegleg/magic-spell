@@ -23,7 +23,11 @@ rsync -raz -e "ssh -i $3/.ssh/id_rsa" --stats --progress --bwlimit=44000 --exclu
 # tar up contents to save space and make encryption easier to manage
 tar czvf "$targethost"-snapshot$(date +%Y%m%d).tgz "$targethost"-snapshot$(date +%Y%m%d)
 
-# clean out working directory
+# clean out working directory, this can take a long time
+# comment out the shreds if you are not concerned with that
+# but since we are copying most of a system, for me it matters
+# that cryptographic components that may have come along
+# in the backup are not easily forensically recovered from disk at a later date
 find $(pwd)/"$targethost"-snapshot$(date +%Y%m%d)/ -type f -exec shred {} \;
 rm -rf  "$targethost"-snapshot$(date +%Y%m%d)
 
