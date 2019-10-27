@@ -7,12 +7,18 @@
 # and the key email or fingerprint that is in your keyring to use for encryption as the second option
 targethost=$1
 mykey=$2
+workdir=$3
 
 # just always try to make the dir
 mkdir "$targethost"-snapshot$(date +%Y%m%d) 2>/dev/null
 
+# cd to the workdir
+cd $3
+
+# this rsync must run as superuser to perserve permissions and ownership properly!
+
 # sync most of an entire server to backup! be sure you have enough space
-rsync -raz --stats --progress --bwlimit=44000 --exclude '/sys' --exclude '/var/cache' --exclude '/usr/src' --exclude '/proc' --exclude '/dev' --exclude '/var/log' root@"$targethost":/ "$targethost"-snapshot$(date +%Y%m%d)
+rsync -raz -e "ssh -i /home/unseenwork/.ssh/id_rsa" --stats --progress --bwlimit=44000 --exclude '/sys' --exclude '/var/cache' --exclude '/usr/src' --exclude '/proc' --exclude '/dev' --exclude '/var/log' root@"$targethost":/ "$targethost"-snapshot$(date +%Y%m%d)
 
 # tar up contents to save space and make encryption easier to manage
 tar czvf "$targethost"-snapshot$(date +%Y%m%d).tgz "$targethost"-snapshot$(date +%Y%m%d)
